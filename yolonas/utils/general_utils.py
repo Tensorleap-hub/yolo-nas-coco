@@ -5,7 +5,7 @@ import numpy as np
 import tensorflow as tf
 from code_loader.contract.responsedataclasses import BoundingBox
 from numpy._typing import NDArray
-from src.config import CONFIG
+from yolonas.config import CONFIG
 
 
 def polygon_to_bbox(vertices):
