@@ -5,14 +5,13 @@ import tensorflow as tf
 from PIL import Image
 
 from code_loader import leap_binder
-from code_loader.contract.enums import LeapDataType
 
 from code_loader.contract.datasetclasses import PreprocessResponse
 from pycocotools.coco import COCO
 
-from src.config import CONFIG, dataset_path
-from src.data.preprocessing import load_set, preprocess_image
-from src.utils.general_utils import extract_and_cache_bboxes
+from yolonas.config import dataset_path, CONFIG
+from yolonas.data.preprocessing import load_set, preprocess_image
+from yolonas.utils.general_utils import extract_and_cache_bboxes
 
 
 # ----------------------------------------------------data processing--------------------------------------------------
@@ -57,9 +56,9 @@ def input_image(idx: int, data: PreprocessResponse) -> np.ndarray:
     data = data.data
     x = data['samples'][idx]
     path = os.path.join(dataset_path, f"images/{x['file_name']}")
-    image = Image.open(path)
     # rescale
-    image = preprocess_image(image)
+    image = np.array(
+        Image.open(path).resize((CONFIG['IMAGE_SIZE'][0], CONFIG['IMAGE_SIZE'][1]), Image.BILINEAR)) / 255.
     return image
 
 
