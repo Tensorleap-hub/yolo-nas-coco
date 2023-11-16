@@ -11,6 +11,7 @@ include:
     - yolonas/visualizers.py
     - yolonas/object_detection_config.yml
     - yolonas/utils/dataclasses.py
+    - yolonas/utils/decoder.py
     - yolonas/utils/gcs_utils.py
     - yolonas/utils/yolo_utils.py
     - yolonas/utils/general_utils.py

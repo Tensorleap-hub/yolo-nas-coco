@@ -5,7 +5,6 @@ from leap_binder import (
     subset_images, input_image, get_bbs
 )
 from yolonas.metrics import custom_yolo_nas_loss
-from yolonas.utils.yolo_utils import decoder
 from yolonas.visualizers import pred_bb_decoder, gt_bb_decoder
 import matplotlib.pyplot as plt
 
@@ -29,7 +28,7 @@ def check_integration():
 
         loss = custom_yolo_nas_loss(y_true=y_true_bbs, reg=reg, cls=cls)
 
-        pred_bb_vis = pred_bb_decoder(images[0], reg, cls)
+        pred_bb_vis = pred_bb_decoder(images[0], reg[0], cls[0])
         plt.imshow(pred_bb_vis.data / 255.)
         gt_bb_vis = gt_bb_decoder(images[0], bb_gt[0])
         plt.imshow(gt_bb_vis.data / 255.)

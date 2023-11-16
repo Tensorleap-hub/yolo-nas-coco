@@ -1,13 +1,19 @@
-from typing import Tuple, List, Union
 import tensorflow as tf
 from code_loader.helpers.detection.utils import xyxy_to_xywh_format
 
-from yolonas.config import CONFIG
-from yolonas.utils.yolo_utils import decoder, y_pred_from_model_outputs
+from yolonas.utils.yolo_utils import decoder
 
 
 def custom_yolo_nas_loss(y_true, reg: tf.Tensor, cls: tf.Tensor):
-    y_pred = y_pred_from_model_outputs(reg, cls)
+    reg = tf.transpose(reg, [0, 2, 1])
+    cls = tf.transpose(cls, [0, 2, 1])
+    reg_fixed = xyxy_to_xywh_format(reg)
+    res = decoder(loc_data=[reg_fixed],
+                  conf_data=[cls],
+                  prior_data=[None],
+                  from_logits=False,
+                  decoded=True)
+    y_pred = tf.convert_to_tensor(res)
 
     # Extract confidence, coordinates, and class predictions
     pred_confidence = y_pred[:, :, 0]
@@ -26,4 +32,4 @@ def custom_yolo_nas_loss(y_true, reg: tf.Tensor, cls: tf.Tensor):
 
     regression_loss = tf.keras.losses.Huber()(true_boxes * mask_expanded, pred_boxes * mask_expanded)
 
-    return regression_loss
+    return regression_loss.numpy()

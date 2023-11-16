@@ -201,7 +201,7 @@ leap_binder.set_visualizer(gt_bb_decoder, 'bb_gt_decoder', LeapDataType.ImageWit
 leap_binder.set_visualizer(pred_bb_decoder, 'pred_bb_decoder', LeapDataType.ImageWithBBox)
 #
 # # set custom metrics
-# leap_binder.add_custom_metric(general_metrics_dict, 'general_metrics')
+leap_binder.add_custom_metric(custom_yolo_nas_loss, 'huber')
 #
 # # set metadata
 # leap_binder.set_metadata(metadata_dict, name='metadata')

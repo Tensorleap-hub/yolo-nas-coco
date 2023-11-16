@@ -17,7 +17,7 @@ def get_predict_bbox_list(reg_fixed: tf.Tensor, cls: tf.Tensor) -> List[Bounding
     Input: data (tf.Tensor): A TensorFlow tensor representing the output data.
     Output: bb_object (List[BoundingBox]): A list of bounding box objects representing the predicted annotations.
     """
-    outputs = decoder(loc_data=[reg_fixed], conf_data=[cls], prior_data=[None],
+    outputs = decoder(loc_data=[np.expand_dims(reg_fixed, 0)], conf_data=[np.expand_dims(cls, 0)], prior_data=[None],
                       from_logits=False, decoded=True)
     bb_object = bb_array_to_object(outputs[0], iscornercoded=True, bg_label=CONFIG['BACKGROUND_LABEL'])
     return bb_object
@@ -38,7 +38,7 @@ def bb_array_to_object(bb_array: Union[NDArray[float], tf.Tensor], iscornercoded
     for i in range(bb_array.shape[0]):
         if bb_array[i][-1] != bg_label:
             if iscornercoded:
-                x, y, w, h = xyxy_to_xywh_format(bb_array[i][1:5])
+                x, y, w, h = bb_array[i][1:5]
                 # unormalize to image dimensions
             else:
                 x, y = bb_array[i][0], bb_array[i][1]
@@ -195,8 +195,8 @@ def extract_and_cache_bboxes(idx: int, data: Dict):
         if isinstance(ann['bbox'], list) and ann['category_id'] <= CONFIG['CLASSES']:
             img_size = (x['height'], x['width'])
             class_id = ann['category_id']
-            bbox = np.expand_dims(ann['bbox'], 0)[0]
-            bbox /= np.array((img_size[1], img_size[0], img_size[1], img_size[0]))
+            bbox = np.expand_dims(ann['bbox'], 0)[0].astype(np.float32)
+            bbox /= np.array((img_size[1], img_size[0], img_size[1], img_size[0])).astype(np.float32)
             bboxes[i, :4] = bbox
             bboxes[i, 4] = class_id
     bboxes[max_anns:, 4] = CONFIG['BACKGROUND_LABEL']

@@ -3,7 +3,7 @@ import tensorflow as tf
 import numpy as np
 from code_loader.contract.responsedataclasses import BoundingBox
 from code_loader.contract.visualizer_classes import LeapImageWithBBox
-from code_loader.helpers.detection.utils import xyxy_to_xywh_format
+from code_loader.helpers.detection.utils import xyxy_to_xywh_format, xywh_to_xyxy_format
 
 from yolonas.config import CONFIG
 from yolonas.utils.general_utils import bb_array_to_object, get_predict_bbox_list
@@ -14,10 +14,10 @@ def pred_bb_decoder(image: np.ndarray, reg: tf.Tensor, cls: tf.Tensor) -> LeapIm
     """
     Overlays the BB predictions on the image
     """
-    reg = tf.transpose(reg, [0, 2, 1])
-    cls = tf.transpose(cls, [0, 2, 1])
+    reg = tf.transpose(reg, [1, 0])
+    cls = tf.transpose(cls, [1, 0])
     # x1,y1,x2,y2
-    reg_fixed = xyxy_to_xywh_format(reg)
+    reg_fixed = xyxy_to_xywh_format(reg) / image.shape[0]
     bb_object = get_predict_bbox_list(reg_fixed, cls)
     bb_object = [bbox for bbox in bb_object]
     return LeapImageWithBBox(data=(image * 255).astype(np.float32), bounding_boxes=bb_object)
