@@ -1,14 +1,15 @@
 import onnx
 from onnx import helper
 
-# Load your ONNX model
+# --------------------------------------------------------------------------
+# Your onnx model's name
 model_name = 'yolo_nas_s'
-model_path = f"{model_name}.onnx"
-model = onnx.load(model_path)
-
 # Assume you have two outputs, replace these with your actual output names
 output1_name = "911"
 output2_name = "903"
+# --------------------------------------------------------------------------
+model_path = f"{model_name}.onnx"
+model = onnx.load(model_path)
 
 # Define the permutation order for the permute layer
 perm_order = [0, 2, 1]  # Adjust this based on your specific needs
