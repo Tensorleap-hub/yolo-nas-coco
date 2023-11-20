@@ -1,7 +1,4 @@
 dataset_path: /Users/ranhomri/tensorleap/data/coco-2017 # this foldr is expected to contain a json file for each subset and an `images` dir
-valid_image_formats:
-  - jpeg
-  - jpg
 
 BATCH_SIZE: 4
 TRAIN_SIZE: 8
