@@ -1,11 +1,15 @@
 import tensorflow as tf
+from PIL import Image
+import numpy as np
 from leap_binder import (
     subset_images, input_image, get_bbs, confusion_matrix_metric
 )
+from yolonas.config import CONFIG
 from yolonas.custom_layers import MockOneClass
 from yolonas.metrics import custom_yolo_nas_loss, huber_metric
 from yolonas.utils.general_utils import draw_image_with_boxes
 from yolonas.visualizers import pred_bb_decoder, gt_bb_decoder
+import matplotlib.pyplot as plt
 
 
 def check_integration():
@@ -14,7 +18,6 @@ def check_integration():
     batch = 8
     responses = subset_images()  # get dataset splits
     training_response = responses[0]  # [training, validation, test]
-
     for idx in range(batch):
         images = []
         bb_gt = []
