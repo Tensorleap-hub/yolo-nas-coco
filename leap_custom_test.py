@@ -9,7 +9,7 @@ from yolonas.visualizers import pred_bb_decoder, gt_bb_decoder
 
 
 def check_integration():
-    model_path = 'model/yolo_nas_s_permuted_output.h5'
+    model_path = 'model/yolo_nas_s_c_1_permuted_output.h5'
     model = tf.keras.models.load_model(model_path)
     batch = 8
     responses = subset_images()  # get dataset splits
