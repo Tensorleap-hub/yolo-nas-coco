@@ -15,7 +15,9 @@ include:
     - yolonas/utils/decoder.py
     - yolonas/utils/gcs_utils.py
     - yolonas/utils/yolo_utils.py
-    - yolonas/utils/general_utils.py
+    - yolonas/utils/general_utils.p
     - yolonas/utils/confusion_matrix.py
     - yolonas/data/posprocessing.py
     - yolonas/data/preprocessing.py
+    - mappings/leap_mapping_permuted_model.yaml
+    - mappings/leap_mapping_regular.yaml
