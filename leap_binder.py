@@ -25,10 +25,12 @@ def subset_images() -> List[PreprocessResponse]:
     """
     # initialize COCO api for instance annotations
     train = COCO(os.path.join(dataset_path, 'train.json'))
-    x_train_raw = load_set(coco=train)
+    imgIds = train.getImgIds()
+    imgs = train.loadImgs(imgIds)
 
     val = COCO(os.path.join(dataset_path, 'val.json'))
-    x_val_raw = load_set(coco=val)
+    imgIds = val.getImgIds()
+    imgs = val.loadImgs(imgIds)
 
     train_size = min(len(x_train_raw), CONFIG['TRAIN_SIZE'])
     val_size = min(len(x_val_raw), CONFIG['VAL_SIZE'])

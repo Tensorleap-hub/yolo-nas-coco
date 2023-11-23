@@ -8,11 +8,6 @@ from yolonas.config import CONFIG
 from yolonas.utils.dataclasses import RescaleMetadata, PaddingCoordinates
 
 
-def load_set(coco, local_filepath):
-    imgIds = coco.getImgIds()  # Get IDs for all images
-    imgs = coco.loadImgs(imgIds)  # Load all images
-    return imgs
-
 
 def preprocess_image(image: Image, get_metadata: bool = False) -> Union[np.ndarray, Tuple[RescaleMetadata, PaddingCoordinates]]:
     width, height = image.size
