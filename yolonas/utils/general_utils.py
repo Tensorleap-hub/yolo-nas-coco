@@ -19,15 +19,8 @@ def get_predict_bbox_list(reg_fixed: tf.Tensor, cls: tf.Tensor) -> List[Bounding
     Input: data (tf.Tensor): A TensorFlow tensor representing the output data.
     Output: bb_object (List[BoundingBox]): A list of bounding box objects representing the predicted annotations.
     """
-    class_list_reshaped, loc_list_reshaped = reshape_output_list(
-        np.reshape(data, (1, *data.shape)), decoded=decoded, image_size=CONFIG['IMAGE_SIZE'])
-    # add batch
-    outputs = DECODER(loc_list_reshaped,
-                      class_list_reshaped,
-                      DEFAULT_BOXES,
-                      from_logits=from_logits,
-                      decoded=decoded,
-                      )
+    outputs = decoder(loc_data=[np.expand_dims(reg_fixed, 0)], conf_data=[np.expand_dims(cls, 0)], prior_data=[None],
+                      from_logits=False, decoded=True)
     bb_object = bb_array_to_object(outputs[0], iscornercoded=True, bg_label=CONFIG['BACKGROUND_LABEL'])
     return bb_object
 
