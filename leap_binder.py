@@ -12,9 +12,13 @@ from pycocotools.coco import COCO
 from yolonas.config import dataset_path, CONFIG
 from yolonas.custom_layers import MockOneClass
 from yolonas.metrics import custom_yolo_nas_loss, placeholder_loss, general_metrics_dict, od_loss
-from yolonas.utils.general_utils import extract_and_cache_bboxes, map_class_ids, count_obj_bbox_occlusions
+from yolonas.utils.general_utils import extract_and_cache_bboxes, map_class_ids
 from yolonas.visualizers import pred_bb_decoder, gt_bb_decoder
 from yolonas.utils.confusion_matrix import confusion_matrix_metric
+
+coco = COCO(os.path.join(dataset_path, 'train.json'))
+leap_binder.cache_container['class_id_to_name'] = {class_id: value['name'] for class_id, value in
+                                                   coco.cats.items()}
 
 
 # ----------------------------------------------------data processing--------------------------------------------------
@@ -24,7 +28,6 @@ def subset_images() -> List[PreprocessResponse]:
     """
     # initialize COCO api for instance annotations
     train_coco = COCO(os.path.join(dataset_path, 'train.json'))
-    CONFIG['class_id_to_name'] = {class_id: value['name'] for class_id, value in train_coco.cats.items()}
     imgIds = train_coco.getImgIds()
     imgs = train_coco.loadImgs(imgIds)
     existing_images = set(train_coco.imgs.keys())
@@ -169,7 +172,6 @@ def metadata_dict(idx: int, data: PreprocessResponse) -> Dict[str, Union[float, 
         # "count_total_obj_bbox_occlusions": get_obj_bbox_occlusions_count(img, bbs),
         # "avg_obj_bbox_occlusions": get_obj_bbox_occlusions_avg(img, bbs),
     }
-
     return metadatas
 
 
