@@ -12,7 +12,7 @@ from pycocotools.coco import COCO
 from yolonas.config import dataset_path, CONFIG
 from yolonas.custom_layers import MockOneClass
 from yolonas.metrics import custom_yolo_nas_loss, placeholder_loss, general_metrics_dict, od_loss
-from yolonas.utils.general_utils import extract_and_cache_bboxes
+from yolonas.utils.general_utils import extract_and_cache_bboxes, map_class_ids, count_obj_bbox_occlusions
 from yolonas.visualizers import pred_bb_decoder, gt_bb_decoder
 from yolonas.utils.confusion_matrix import confusion_matrix_metric
 
@@ -24,6 +24,7 @@ def subset_images() -> List[PreprocessResponse]:
     """
     # initialize COCO api for instance annotations
     train_coco = COCO(os.path.join(dataset_path, 'train.json'))
+    CONFIG['class_id_to_name'] = {class_id: value['name'] for class_id, value in train_coco.cats.items()}
     imgIds = train_coco.getImgIds()
     imgs = train_coco.loadImgs(imgIds)
     existing_images = set(train_coco.imgs.keys())
@@ -37,7 +38,6 @@ def subset_images() -> List[PreprocessResponse]:
 
     train_size = min(len(x_train_raw), CONFIG['TRAIN_SIZE'])
     val_size = min(len(x_val_raw), CONFIG['VAL_SIZE'])
-
     training_subset = PreprocessResponse(length=train_size, data={'cocofile': train_coco,
                                                                   'samples': x_train_raw,
                                                                   'subdir': 'train'})
@@ -71,6 +71,7 @@ def get_annotation_coco(idx: int, data: PreprocessResponse) -> np.ndarray:
 def get_bbs(idx: int, data: PreprocessResponse) -> np.ndarray:
     data = data.data
     bboxes = extract_and_cache_bboxes(idx, data)
+    bboxes = map_class_ids(bboxes)
     return bboxes
 
 
@@ -104,18 +105,22 @@ def bbox_num(bbs: np.ndarray) -> int:
 
 def get_avg_bb_area(bbs: np.ndarray) -> float:
     valid_bbs = bbs[bbs[..., -1] != CONFIG['BACKGROUND_LABEL']]
-    areas = valid_bbs[:, 2] * valid_bbs[:, 3]
-    return float(round(areas.mean(), 3))
+    if len(valid_bbs) > 0:
+        areas = valid_bbs[:, 2] * valid_bbs[:, 3]
+        return float(round(areas.mean(), 3))
+    else:
+        return float(0.0)
 
 
 def get_avg_bb_aspect_ratio(bbs: np.ndarray) -> float:
     valid_bbs = bbs[bbs[..., -1] != CONFIG['BACKGROUND_LABEL']]
-    aspect_ratios = valid_bbs[:, 2] / valid_bbs[:, 3]
-    return float(round(aspect_ratios.mean(), 3))
+    if len(valid_bbs) > 0:
+        aspect_ratios = valid_bbs[:, 2] / valid_bbs[:, 3]
+        return float(round(aspect_ratios.mean(), 3))
+    else:
+        return float(0.0)
 
 
-#
-#
 def get_instances_num(bbs: np.ndarray) -> float:
     valid_bbs = bbs[bbs[..., -1] != CONFIG['BACKGROUND_LABEL']]
     return float(round(valid_bbs.shape[0], 3))
@@ -125,8 +130,8 @@ def get_instances_num(bbs: np.ndarray) -> float:
 #     occlusion_threshold = 0.2  # Example threshold value
 #     occlusions_count = count_obj_bbox_occlusions(img, bboxes, occlusion_threshold, calc_avg_flag)
 #     return occlusions_count
-
-
+#
+#
 # def get_obj_bbox_occlusions_avg(img: np.ndarray, bboxes: np.ndarray) -> float:
 #     return get_obj_bbox_occlusions_count(img, bboxes, calc_avg_flag=True)
 
