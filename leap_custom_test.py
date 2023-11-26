@@ -2,8 +2,7 @@ import tensorflow as tf
 from leap_binder import (
     subset_images, input_image, get_bbs, confusion_matrix_metric, metadata_dict
 )
-from yolonas.custom_layers import MockOneClass
-from yolonas.metrics import custom_yolo_nas_loss, compute_losses, od_loss
+from yolonas.metrics import od_loss
 from yolonas.utils.general_utils import draw_image_with_boxes
 from yolonas.visualizers import pred_bb_decoder, gt_bb_decoder
 
@@ -19,13 +18,13 @@ def check_integration():
     for idx in range(batch):
         images.append(input_image(idx, training_response))
         bb_gt.append(get_bbs(idx, training_response))
-        metadata = metadata_dict(idx, training_response)
+
+    metadata = metadata_dict(0, training_response)
     y_true_bbs = tf.convert_to_tensor(bb_gt)  # convert ground truth bbs to tensor
 
     input_img_tf = tf.convert_to_tensor(images)
     reg, cls = model([input_img_tf])  # infer and get model prediction
     loss = od_loss(y_true_bbs, reg, cls)
-    loss = custom_yolo_nas_loss(y_true=y_true_bbs, reg=reg, cls=cls)
     conf_mat = confusion_matrix_metric(y_true_bbs, cls, reg, input_img_tf)
 
     pred_bb_vis = pred_bb_decoder(images[0], reg[0], cls[0])

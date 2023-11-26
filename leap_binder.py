@@ -11,7 +11,6 @@ from pycocotools.coco import COCO
 
 from yolonas.config import dataset_path, CONFIG
 from yolonas.custom_layers import MockOneClass
-from yolonas.data.preprocessing import preprocess_image
 from yolonas.metrics import custom_yolo_nas_loss, placeholder_loss, general_metrics_dict, od_loss
 from yolonas.utils.general_utils import extract_and_cache_bboxes
 from yolonas.visualizers import pred_bb_decoder, gt_bb_decoder
@@ -24,13 +23,13 @@ def subset_images() -> List[PreprocessResponse]:
     This function returns the training and validation datasets in the format expected by tensorleap
     """
     # initialize COCO api for instance annotations
-    train_coco = COCO(os.path.join(dataset_path, 'filtered_train.json'))
+    train_coco = COCO(os.path.join(dataset_path, 'train.json'))
     imgIds = train_coco.getImgIds()
     imgs = train_coco.loadImgs(imgIds)
     existing_images = set(train_coco.imgs.keys())
     x_train_raw = train_coco.loadImgs(set(imgIds).intersection(existing_images))
 
-    val_coco = COCO(os.path.join(dataset_path, 'filtered_train.json'))
+    val_coco = COCO(os.path.join(dataset_path, 'val.json'))
     imgIds = val_coco.getImgIds()
     imgs = val_coco.loadImgs(imgIds)
     existing_images = set(val_coco.imgs.keys())
