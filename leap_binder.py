@@ -162,6 +162,10 @@ def metadata_dict(idx: int, data: PreprocessResponse) -> Dict[str, Union[float, 
         "bbox_aspect_ratio": get_avg_bb_aspect_ratio(bbs),
         "duplicate_bb": count_duplicate_bbs(bbs),
         "small_bbs_number": count_small_bbs(bbs),
+        "image_mean": float(img.mean()),
+        "image_std": float(img.std()),
+        "image_min": float(img.min()),
+        "image_max": float(img.max())
         # "count_total_obj_bbox_occlusions": get_obj_bbox_occlusions_count(img, bbs),
         # "avg_obj_bbox_occlusions": get_obj_bbox_occlusions_avg(img, bbs),
     }
