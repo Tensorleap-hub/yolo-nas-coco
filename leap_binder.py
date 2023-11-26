@@ -16,7 +16,7 @@ from yolonas.utils.general_utils import extract_and_cache_bboxes, map_class_ids
 from yolonas.visualizers import pred_bb_decoder, gt_bb_decoder
 from yolonas.utils.confusion_matrix import confusion_matrix_metric
 
-coco = COCO(os.path.join(dataset_path, 'train.json'))
+coco = COCO(os.path.join(dataset_path, CONFIG['train_file']))
 leap_binder.cache_container['class_id_to_name'] = {class_id: value['name'] for class_id, value in
                                                    coco.cats.items()}
 
@@ -27,13 +27,13 @@ def subset_images() -> List[PreprocessResponse]:
     This function returns the training and validation datasets in the format expected by tensorleap
     """
     # initialize COCO api for instance annotations
-    train_coco = COCO(os.path.join(dataset_path, 'train.json'))
+    train_coco = COCO(os.path.join(dataset_path, CONFIG['train_file']))
     imgIds = train_coco.getImgIds()
     imgs = train_coco.loadImgs(imgIds)
     existing_images = set(train_coco.imgs.keys())
     x_train_raw = train_coco.loadImgs(set(imgIds).intersection(existing_images))
 
-    val_coco = COCO(os.path.join(dataset_path, 'val.json'))
+    val_coco = COCO(os.path.join(dataset_path, CONFIG['val_file']))
     imgIds = val_coco.getImgIds()
     imgs = val_coco.loadImgs(imgIds)
     existing_images = set(val_coco.imgs.keys())

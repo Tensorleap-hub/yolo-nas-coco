@@ -11,6 +11,7 @@ from yolonas.config import CONFIG
 from yolonas.utils.yolo_utils import decoder
 from code_loader.helpers.detection.utils import xyxy_to_xywh_format
 from code_loader.helpers.detection.yolo.enums import YoloDecodingType
+from code_loader import leap_binder
 
 
 def get_predict_bbox_list(reg_fixed: tf.Tensor, cls: tf.Tensor) -> List[BoundingBox]:
@@ -32,7 +33,7 @@ def bb_array_to_object(bb_array: Union[NDArray[float], tf.Tensor], iscornercoded
     bb_array is (CLASSES,TOP_K,PROPERTIES) WHERE PROPERTIES =(conf,xmin,ymin,xmax,ymax)
     """
     bb_list = []
-    original_label_to_name = CONFIG['class_id_to_name']
+    original_label_to_name = leap_binder.cache_container['class_id_to_name']
     consecutive_label_to_original = CONFIG['labels_consecutive_to_original']
     if not isinstance(bb_array, np.ndarray):
         bb_array = np.array(bb_array)
