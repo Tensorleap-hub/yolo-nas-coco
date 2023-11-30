@@ -54,7 +54,8 @@ def unlabeled_preprocessing_func() -> PreprocessResponse:
     This function returns the unlabeled data split in the format expected by tensorleap
     """
     unlable_files = os.listdir(unlabeled_dataset_path)
-    unlabeled_size = lean(unlable_files)
+    unlabeled_size = len(unlable_files)
+    print(unlabeled_size)
     unlabeled_subset = PreprocessResponse(length=unlabeled_size, data={'unlable_files': unlable_files,
                                                                        'dataset_path': unlabeled_dataset_path,
                                                                        'subdir': 'unlabeled'})
@@ -66,10 +67,11 @@ def input_image(idx: int, data: PreprocessResponse) -> np.ndarray:
     Returns a BGR image normalized and padded
     """
     data = data.data
-    if  data['subdir']:
-        path = os.path.join(data['dataset_path'], f"images/{x['file_name']}")
-    else:
+    if  data['subdir']=='unlabeled':
         x = data['unlable_files'][idx]
+        path = os.path.join(data['dataset_path'], data['unlable_files'][idx])
+    else:
+        x = data['samples'][idx]
         path = os.path.join(data['dataset_path'], f"images/{x['file_name']}")
     image = Image.open(path)
     image = image.resize((CONFIG['IMAGE_SIZE'][0], CONFIG['IMAGE_SIZE'][1]), Image.BILINEAR)
@@ -169,9 +171,13 @@ def count_small_bbs(bboxes: np.ndarray) -> float:
 
 
 def metadata_dict(idx: int, data: PreprocessResponse) -> Dict[str, Union[float, int, str]]:
+    if  data.data['subdir']=='unlabeled':
+        metadatas = {"idx": idx, "fname": data.data["unlable_files"][idx]}
+        return metadatas
+
     bbs = get_bbs(idx, data)
     img = input_image(idx, data)
-
+    
     metadatas = {
         "idx": idx,
         "fname": get_fname(idx, data),
