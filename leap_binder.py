@@ -177,7 +177,7 @@ def metadata_dict(idx: int, data: PreprocessResponse) -> Dict[str, Union[float, 
 
     bbs = get_bbs(idx, data)
     img = input_image(idx, data)
-
+    
     metadatas = {
         "idx": idx,
         "fname": get_fname(idx, data),
