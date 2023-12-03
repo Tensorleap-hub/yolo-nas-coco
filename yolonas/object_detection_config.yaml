@@ -1,7 +1,7 @@
-dataset_path: /home/tensorleap/tensorleap/data/coco-dataset/coco/
-unlabeled_dataset_path: /home/tensorleap/tensorleap/data/coco-dataset/coco/images/
-train_file: filtered_train.json
-val_file: filtered_train.json
+dataset_path: /Users/ranhomri/tensorleap/data/coco-2017
+unlabeled_dataset_path: /Users/ranhomri/tensorleap/data/coco-2017/images/
+train_file: train.json
+val_file: train.json
 
 
 TRAIN_SIZE: 64

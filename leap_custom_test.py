@@ -1,6 +1,6 @@
 import tensorflow as tf
 from leap_binder import (
-    subset_images, input_image, get_bbs, confusion_matrix_metric, metadata_dict
+    subset_images, input_image, get_bbs, confusion_matrix_metric, metadata_dict, unlabeled_preprocessing_func
 )
 from yolonas.metrics import od_loss, iou_metrics_dict
 from yolonas.utils.general_utils import draw_image_with_boxes
@@ -13,6 +13,8 @@ def check_integration():
     batch = 4
     responses = subset_images()  # get dataset splits
     training_response = responses[0]
+    unlabeled_response = unlabeled_preprocessing_func()
+    unlabeled_image = input_image(0, unlabeled_response)
     images = []
     bbs_gt = []
     for idx in range(batch):
