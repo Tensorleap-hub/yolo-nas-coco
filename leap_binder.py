@@ -41,12 +41,12 @@ def subset_images() -> List[PreprocessResponse]:
     training_subset = PreprocessResponse(length=train_size, data={'cocofile': train_coco,
                                                                   'dataset_path': dataset_path,
                                                                   'samples': x_train_raw,
-                                                                  'subdir': 'train'})
+                                                                  'subdir': 'train2017'})
 
     validation_subset = PreprocessResponse(length=val_size, data={'cocofile': val_coco,
                                                                   'dataset_path': dataset_path,
                                                                   'samples': x_val_raw,
-                                                                  'subdir': 'val'})
+                                                                  'subdir': 'val2017'})
     return [training_subset, validation_subset]
 
 
@@ -59,7 +59,7 @@ def unlabeled_preprocessing_func() -> PreprocessResponse:
     print(unlabeled_size)
     unlabeled_subset = PreprocessResponse(length=unlabeled_size, data={'unlable_files': unlable_files,
                                                                        'dataset_path': unlabeled_dataset_path,
-                                                                       'subdir': 'unlabeled'})
+                                                                       'subdir': 'unlabeled2017'})
     return unlabeled_subset
 
 
@@ -68,14 +68,17 @@ def input_image(idx: int, data: PreprocessResponse) -> np.ndarray:
     Returns a BGR image normalized and padded
     """
     data = data.data
-    if data['subdir'] == 'unlabeled':
+    if data['subdir'] == 'unlabeled2017':
         path = os.path.join(data['dataset_path'], data['unlable_files'][idx])
     else:
         x = data['samples'][idx]
-        path = os.path.join(data['dataset_path'], f"images/{x['file_name']}")
+        path = os.path.join(data['dataset_path'], f"images/{data['subdir']}/{x['file_name']}")
     image = Image.open(path)
     image = image.resize((CONFIG['IMAGE_SIZE'][0], CONFIG['IMAGE_SIZE'][1]), Image.BILINEAR)
-    return np.asarray(image) / 255.
+    image_array = np.asarray(image) / 255.
+    if image_array.shape[-1] != 3:
+        image_array = np.repeat(image_array[..., np.newaxis], 3, axis=-1)
+    return image_array
 
 
 def get_annotation_coco(idx: int, data: PreprocessResponse) -> np.ndarray:
@@ -173,7 +176,7 @@ def count_small_bbs(bboxes: np.ndarray) -> float:
 def metadata_dict(idx: int, data: PreprocessResponse) -> Dict[str, Union[float, int, str]]:
     img = input_image(idx, data)
 
-    if data.data['subdir'] == 'unlabeled':
+    if data.data['subdir'] == 'unlabeled2017':
         metadatas = {
             "idx": idx,
             "fname": data.data["unlable_files"][idx],
