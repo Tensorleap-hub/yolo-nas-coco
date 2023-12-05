@@ -1,5 +1,4 @@
 import os
-import sys
 from typing import List, Dict, Union
 import numpy as np
 from PIL import Image
